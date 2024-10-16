@@ -9,7 +9,7 @@ const Login = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     console.log('Logging in with', { email, password });
-    navigate('/');
+    navigate('/train');
   };
 
   return (

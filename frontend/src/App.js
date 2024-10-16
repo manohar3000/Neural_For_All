@@ -18,11 +18,11 @@ import LandingPage from './pages/LandingPage'
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<RootLayout />}>
-      <Route index element={<Home />}/>
-      <Route path='landingpage' element={<LandingPage />}/>
+      <Route index element={<LandingPage />}/>
+      <Route path='train' element={<Home />}/>
       <Route path='about' element={<About />}/>
       <Route path='login' element={<Login />}/>
-      <Route path='signup' element={<SignUp />}/>
+      <Route path='signUp' element={<SignUp />}/>
     </Route>
   )
 )

@@ -5,6 +5,7 @@ import * as tf from '@tensorflow/tfjs';
 import * as tfvis from '@tensorflow/tfjs-vis';
 
 const sidebar = tfvis.visor();
+sidebar.close()
 
 const Network = () => {
   const [layerCount, setLayerCount] = useState(3); // Default to 3 layers

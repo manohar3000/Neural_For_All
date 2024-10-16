@@ -3,8 +3,7 @@ function Footer() {
       <footer className="footer">
         <p>Follow us on:</p>
         <div className="social-icons">
-          <a href="#">📧 G-mail</a>
-          <a href="#">🔗 LinkedIn</a>
+          <a target="_blank" rel="noreferrer" href="https://www.linkedin.com/in/manohar3000">🔗 LinkedIn</a>
         </div>
       </footer>
     );
