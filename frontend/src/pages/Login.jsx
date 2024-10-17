@@ -6,10 +6,24 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log('Logging in with', { email, password });
-    navigate('/train');
+
+    const response = await fetch('http://localhost:4000/api/user/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email, password })
+    })
+    const json = await response.json()
+
+    if(response.ok){
+      console.log('Logging in with', { email, password });
+      navigate('/train');
+    }
+
+    if(!response.ok){
+      alert(json.error);
+    }
   };
 
   return (
