@@ -20,7 +20,7 @@ const Network = () => {
   const [batchSize, setBatchSize] = useState(32);
   const [learningRate, setLearningRate] = useState(0.001);
   const [lossFunction, setLossFunction] = useState('meanSquaredError');
-  const [dataset, setDataset] = useState('MNIST');
+  const [dataset, setDataset] = useState('Dummy Dataset');
 
   const networkRef = useRef();
   const svgRef = useRef();
@@ -28,28 +28,56 @@ const Network = () => {
    // Create and store the model in a ref to avoid re-initialization
    const modelRef = useRef(null);
 
+   const surface1 = { name: 'Model Summary', tab: 'Model Inspection'};
+
    const surface = { name: 'Training Progress', tab: 'Training' };
  
    const createModel = () => {
-     const newModel = tf.sequential({
-       layers: [
-         tf.layers.dense({ inputShape: [784], units: 32, activation: 'relu' }),
-         tf.layers.dense({ units: 10, activation: 'softmax' }),
-       ],
-     });
- 
-     newModel.compile({
-       optimizer: 'sgd',
-       loss: 'categoricalCrossentropy',
-       metrics: ['accuracy'],
-     });
- 
-     modelRef.current = newModel; // Store the model in the ref
-   };
- 
-   useEffect(() => {
-     createModel(); // Create the model once when the component mounts
-   }, []);
+    try {
+      const newModel = tf.sequential();
+
+      // Use default activation if the first layer's activation is empty
+      const inputActivation = layers[1].activation || 'relu';
+
+      // Add input layer
+      newModel.add(
+        tf.layers.dense({
+          inputShape: [layers[0].neuronCount],
+          units: layers[1].neuronCount,
+          activation: inputActivation,
+        })
+      );
+
+      // Add remaining hidden and output layers
+      for (let i = 2; i < layers.length; i++) {
+        const layerActivation = layers[i]?.activation || 'relu'; // Fallback to 'relu'
+        newModel.add(
+          tf.layers.dense({
+            units: layers[i].neuronCount,
+            activation: layerActivation,
+          })
+        );
+      }
+
+      newModel.compile({
+        optimizer: tf.train.sgd(learningRate),
+        loss: lossFunction,
+        metrics: ['accuracy'],
+      });
+
+      for(let i=0; i < layers.length - 1; i++) {
+        const surface0 = { name: `Layer Summary${i+1}`, tab: 'Model Inspection'};
+        tfvis.show.layer(surface0, newModel.getLayer(undefined, i));
+      }
+
+      tfvis.show.modelSummary(surface1, newModel);
+
+      modelRef.current = newModel;
+      console.log('Model created successfully!');
+    } catch (error) {
+      console.error('Error creating model:', error);
+    }
+  };
  
    const handleTraining = async () => {
      if (!modelRef.current) {
@@ -57,8 +85,8 @@ const Network = () => {
        return;
      }
  
-     const data = tf.randomNormal([100, 784]);
-     const labels = tf.randomUniform([100, 10]);
+     const data = tf.randomNormal([100, layers[0].neuronCount]);
+     const labels = tf.randomUniform([100, layers[layerCount-1].neuronCount]);
  
      console.log('Training started...');
      setStart(true);
@@ -74,17 +102,18 @@ const Network = () => {
    };
  
    const handleStartButtonClick = (e) => {
-    if (!sidebar.isOpen()) {
-      sidebar.open();}
-     if (!start) {
-       e.target.innerText = 'Pause';
-       handleTraining();
-     } else {
-       e.target.innerText = 'Start';
-       console.log('Training paused'); // Placeholder for pause logic
-     }
-     setStart(!start);
-   };
+    if (!sidebar.isOpen()) sidebar.open();
+    if (!start) {
+      e.target.innerText = 'Pause';
+      createModel(); // Create the model when training starts
+      handleTraining();
+      e.target.innerText = 'Start';
+    } else {
+      e.target.innerText = 'Start';
+      console.log('Training paused');
+    }
+    setStart(!start);
+  };
  
   const handleVisualization = () => {
     if (!sidebar.isOpen()) {
@@ -194,7 +223,7 @@ const Network = () => {
 
         <label>Dataset:</label>
         <select value={dataset} onChange={(e) => setDataset(e.target.value)}>
-          <option value="MNIST">MNIST</option>
+          <option value="Dummy Dataset">Dummy Dataset</option>
         </select>
 
         </div>
