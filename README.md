@@ -4,6 +4,7 @@ Neural_For_All
 <p align="center">
 Neural_For_All is a Neural Network Training Dashboard implemented in MERN Stack with tensorflow.js for training and visualization in browser...
 </p>
+
 ![Home](https://github.com/manohar3000/Neural_For_All/blob/main/assets/Home.png)<br>
 ![Training](https://github.com/user-attachments/assets/729b17dc-a0ea-4ec1-aa48-23fdf6d70992)
 
